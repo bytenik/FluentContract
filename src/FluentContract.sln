@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentContract", "FluentContract\FluentContract.csproj", "{61AC7023-A0DB-4960-9CAD-4B3691D99F4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentContract.Test", "FluentContract.Test\FluentContract.Test.csproj", "{4AD80AF8-36C6-44C5-8F2A-02C1DEA98D0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{61AC7023-A0DB-4960-9CAD-4B3691D99F4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61AC7023-A0DB-4960-9CAD-4B3691D99F4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61AC7023-A0DB-4960-9CAD-4B3691D99F4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AD80AF8-36C6-44C5-8F2A-02C1DEA98D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AD80AF8-36C6-44C5-8F2A-02C1DEA98D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AD80AF8-36C6-44C5-8F2A-02C1DEA98D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AD80AF8-36C6-44C5-8F2A-02C1DEA98D0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
