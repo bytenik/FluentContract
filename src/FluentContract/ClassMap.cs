@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using FluentContract.Internals;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace FluentContract
 {
@@ -60,6 +61,12 @@ namespace FluentContract
                 });
             }
 
+            return this;
+        }
+
+        public ClassMap<T> SetConverter(JsonConverter converter)
+        {
+            JsonContract.Converter = converter;
             return this;
         }
     }
