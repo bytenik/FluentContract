@@ -12,22 +12,29 @@ namespace FluentContract
 {
     public class FluentResolverAndBinder : SerializationBinder, IContractResolver
     {
-        private readonly IDictionary<Type, ContractInformation> _infoByType = new Dictionary<Type, ContractInformation>();
-        private readonly IDictionary<string, ContractInformation> _infoByName = new Dictionary<string, ContractInformation>();
+        private readonly IDictionary<Type, ClassMap> _infoByType = new Dictionary<Type, ClassMap>();
+        private readonly IDictionary<string, ClassMap> _infoByName = new Dictionary<string, ClassMap>();
         private readonly IContractResolver _wrappedResolver;
         private readonly SerializationBinder _wrappedBinder;
 
-        public FluentResolverAndBinder(IContractResolver wrappedResolver, SerializationBinder wrappedBinder = null)
+        public FluentResolverAndBinder(IContractResolver wrappedResolver = null, SerializationBinder wrappedBinder = null)
         {
-            Contract.Requires<ArgumentNullException>(wrappedResolver != null);
-
-            _wrappedResolver = wrappedResolver;
+            _wrappedResolver = wrappedResolver ?? new DefaultContractResolver();
             _wrappedBinder = wrappedBinder;
         }
 
-        public FluentResolverAndBinder(SerializationBinder wrappedBinder = null)
-            : this(new DefaultContractResolver(), wrappedBinder)
+        public void RegisterClassMap<T>(Action<ClassMap<T>> initializer)
         {
+            var baseContract = ResolveContract(typeof(T)) as JsonObjectContract;
+            if (baseContract == null)
+                throw new InvalidOperationException("Only classes can be mapped.");
+
+            var cm = new ClassMap<T>(baseContract);
+            initializer(cm);
+
+            _infoByType[typeof(T)] = cm;
+            if (cm.TypeName != null)
+                _infoByName[cm.TypeName] = cm;
         }
 
         public JsonContract ResolveContract(Type type)
@@ -56,7 +63,7 @@ namespace FluentContract
         [ContractInvariantMethod]
         private void ObjectInvariant()
         {
-            Contract.Invariant(_wrappedResolver != null, "Inner contract resolver cannot be null.");
+            Contract.Invariant(_wrappedResolver != null, "Wrapped contract resolver cannot be null.");
         }
 
         public override void BindToName(Type serializedType, out string assemblyName, out string typeName)

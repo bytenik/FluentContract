@@ -47,7 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FluentResolverAndBinder.cs" />
-    <Compile Include="ContractInformation.cs" />
+    <Compile Include="ClassMap.cs" />
+    <Compile Include="Internals\ConstructorCompiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
