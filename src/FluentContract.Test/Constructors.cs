@@ -38,7 +38,7 @@ namespace FluentContract.Test
         public void Class_Should_Construct_Via_Lambda()
         {
             var mappings = new FluentMappings();
-            mappings.RegisterClassMap<Custom>(x => x.MapCreator(() => new Custom(3)));
+            mappings.MapClass<Custom>(x => x.MapCreator(() => new Custom(3)));
 
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
             var inst = new Custom(5);
@@ -52,7 +52,7 @@ namespace FluentContract.Test
         public void Class_Constructs_With_Custom_Constructor()
         {
             var mappings = new FluentMappings();
-            mappings.RegisterClassMap<Custom>(x => x.MapCreator(t => new Custom(t.String)));
+            mappings.MapClass<Custom>(x => x.MapCreator(t => new Custom(t.String)));
 
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
             var inst = new Custom(5);

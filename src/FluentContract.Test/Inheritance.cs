@@ -31,8 +31,8 @@ namespace FluentContract.Test
         {
             var mappings = new FluentMappings();
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
-            mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
-            mappings.RegisterClassMap<Child>(cm => cm.SetDiscriminator("Child"));
+            mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
+            mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() }, sett);
             var linq = JsonConvert.DeserializeObject<JObject>(json);
             Assert.Equal("Child", linq.$Object["$type"]);
@@ -43,8 +43,8 @@ namespace FluentContract.Test
         {
             var mappings = new FluentMappings();
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
-            mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
-            mappings.RegisterClassMap<Child>(cm => cm.SetDiscriminator("Child"));
+            mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
+            mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Parent() }, sett);
             var linq = JsonConvert.DeserializeObject<JObject>(json);
             Assert.Equal("Parent", linq.$Object["$type"]);
@@ -55,8 +55,8 @@ namespace FluentContract.Test
         {
             var mappings = new FluentMappings();
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
-            mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
-            mappings.RegisterClassMap<Child>(cm => cm.SetDiscriminator("Child"));
+            mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
+            mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() { ChildString = "Test" } }, sett);
             var rt = JsonConvert.DeserializeObject<Container>(json, sett);
             Assert.IsType<Child>(rt.Object);
@@ -68,14 +68,14 @@ namespace FluentContract.Test
         {
             var mappings = new FluentMappings();
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
-            mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
-            mappings.RegisterClassMap<Child>(cm => cm.SetDiscriminator("Child"));
+            mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
+            mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() { ChildString = "Test" } }, sett);
 
             // kill the child map
             mappings = new FluentMappings();
             sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
-            mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
+            mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
 
             Assert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Container>(json, sett));
         }

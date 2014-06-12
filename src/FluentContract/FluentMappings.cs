@@ -32,7 +32,7 @@ namespace FluentContract
             _contractResolver = new FluentContractResolver(this);
         }
 
-        public void RegisterClassMap<T>(Action<ClassMap<T>> classMapInitializer)
+        public void MapClass<T>(Action<ClassMap<T>> classMapInitializer)
         {
             var baseContract = ContractResolver.ResolveContract(typeof(T)) as JsonObjectContract;
             if (baseContract == null)

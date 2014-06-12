@@ -40,7 +40,7 @@ namespace FluentContract.Test
         public void Custom_Converter_Should_Write_Entire_Type()
         {
             var mappings = new FluentMappings();
-            mappings.RegisterClassMap<Obj>(cm => cm.SetConverter(new TestConverter()));
+            mappings.MapClass<Obj>(cm => cm.SetConverter(new TestConverter()));
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
 
             var obj = new Obj { String = "Hello World" };
@@ -53,7 +53,7 @@ namespace FluentContract.Test
         public void Custom_Converter_Should_Write_Single_Property()
         {
             var mappings = new FluentMappings();
-            mappings.RegisterClassMap<Obj>(cm => cm.MapMember(mm => mm.String, mm => mm.SetConverter(new TestConverter())));
+            mappings.MapClass<Obj>(cm => cm.MapMember(mm => mm.String, mm => mm.SetConverter(new TestConverter())));
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
 
             var obj = new Obj { String = "Hello World" };
@@ -67,7 +67,7 @@ namespace FluentContract.Test
         public void Custom_Converter_Should_Read_Single_Property()
         {
             var mappings = new FluentMappings();
-            mappings.RegisterClassMap<Obj>(cm => cm.MapMember(mm => mm.String, mm => mm.SetConverter(new TestConverter())));
+            mappings.MapClass<Obj>(cm => cm.MapMember(mm => mm.String, mm => mm.SetConverter(new TestConverter())));
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
 
             var json = "{ \"String\": \"Hello World\" }";

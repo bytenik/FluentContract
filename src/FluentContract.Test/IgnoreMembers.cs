@@ -20,7 +20,7 @@ namespace FluentContract.Test
         public void Can_Ignore_Property()
         {
             var mappings = new FluentMappings();
-            mappings.RegisterClassMap<Obj>(cm => cm.UnmapMember(x => x.String));
+            mappings.MapClass<Obj>(cm => cm.UnmapMember(x => x.String));
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
 
             var obj = new Obj { String = "Test" };
