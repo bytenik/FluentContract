@@ -9,7 +9,7 @@ using Xunit;
 
 namespace FluentContract.Test
 {
-    public class TestInheritance
+    public class Inheritance
     {
         class Container
         {

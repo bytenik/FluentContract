@@ -20,16 +20,15 @@ namespace FluentContract.Internals
         private Type _class;
         private ParameterExpression _prototypeParameter;
         private ConstructorInfo _constructorInfo;
-        private Dictionary<MemberInfo, ParameterExpression> _parameters;
+        private Dictionary<ParameterInfo, MemberInfo> _parameters;
 
-        public ConstructorInfo GetConstructorInfo<TClass>(Expression<Func<TClass, TClass>> creatorLambda, out Dictionary<MemberInfo, ParameterExpression> arguments)
+        private MemberInfo _lastMemberAccess;
+
+        public ConstructorInfo GetConstructorInfo<TClass>(Expression<Func<TClass, TClass>> creatorLambda, out Dictionary<ParameterInfo, MemberInfo> arguments)
         {
-            // transform c => expression (where c is the prototype parameter)
-            // to (p1, p2, ...) => expression' where expression' is expression with every c.X replaced by p#
-
             _class = typeof(TClass); // not creatorLambda.Type in case lambda returns a subtype of TClass
             _prototypeParameter = creatorLambda.Parameters[0];
-            _parameters = new Dictionary<MemberInfo, ParameterExpression>();
+            _parameters = new Dictionary<ParameterInfo, MemberInfo>();
             var body = Visit(creatorLambda.Body);
 
             arguments = _parameters;
@@ -39,7 +38,21 @@ namespace FluentContract.Internals
         protected override Expression VisitNew(NewExpression node)
         {
             if (node.Constructor.DeclaringType == _class)
+            {
                 _constructorInfo = node.Constructor;
+                _parameters = node.Constructor.GetParameters().Select((pi, i) =>
+                {
+                    var arg = node.Arguments[i];
+
+                    if (arg.NodeType != ExpressionType.MemberAccess)
+                        throw new InvalidOperationException("Constructor argument " + i + " is not a member reference against the prototype parameter.");
+
+                    VisitMember((MemberExpression)arg);
+
+                    return new { pi, mi = _lastMemberAccess };
+                })
+                .ToDictionary(x => x.pi, x => x.mi);
+            }
 
             return base.VisitNew(node);
         }
@@ -48,20 +61,12 @@ namespace FluentContract.Internals
         {
             if (node.Expression == _prototypeParameter)
             {
-                var memberInfo = node.Member;
+                _lastMemberAccess = node.Member;
 
-                ParameterExpression parameter;
-                if (!_parameters.TryGetValue(memberInfo, out parameter))
-                {
-                    var parameterName = string.Format("_p{0}_", _parameters.Count + 1); // avoid naming conflicts with body
-                    parameter = Expression.Parameter(node.Type, parameterName);
-                    _parameters.Add(memberInfo, parameter);
-                }
-
-                return parameter;
+                return node;
             }
-
-            return base.VisitMember(node);
+            else
+                throw new InvalidOperationException("The only operations allowed are accessing a field or property on the prototype parameter.");
         }
 
         protected override Expression VisitParameter(ParameterExpression node)

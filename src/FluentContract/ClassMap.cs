@@ -55,9 +55,9 @@ namespace FluentContract
             {
                 JsonContract.ConstructorParameters.Add(new JsonProperty
                 {
-                    PropertyName = arg.Key.Name,
-                    UnderlyingName = arg.Value.Name,
-                    PropertyType = arg.Key.MemberType == MemberTypes.Property ? ((PropertyInfo)arg.Key).PropertyType : ((FieldInfo)arg.Key).FieldType
+                    PropertyName = arg.Value.Name,
+                    UnderlyingName = arg.Key.Name,
+                    PropertyType = arg.Value.MemberType == MemberTypes.Property ? ((PropertyInfo)arg.Value).PropertyType : ((FieldInfo)arg.Value).FieldType
                 });
             }
 
