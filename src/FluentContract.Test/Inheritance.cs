@@ -29,8 +29,8 @@ namespace FluentContract.Test
         [Fact]
         public void Discriminator_Should_Be_Written_For_Child()
         {
-            var mappings = new FluentResolverAndBinder();
-            var sett = new JsonSerializerSettings { ContractResolver = mappings, Binder = mappings };
+            var mappings = new FluentMappings();
+            var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
             mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
             mappings.RegisterClassMap<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() }, sett);
@@ -41,8 +41,8 @@ namespace FluentContract.Test
         [Fact]
         public void Discriminator_Should_Be_Written_For_Parent()
         {
-            var mappings = new FluentResolverAndBinder();
-            var sett = new JsonSerializerSettings { ContractResolver = mappings, Binder = mappings };
+            var mappings = new FluentMappings();
+            var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
             mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
             mappings.RegisterClassMap<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Parent() }, sett);
@@ -53,8 +53,8 @@ namespace FluentContract.Test
         [Fact]
         public void Discriminator_Enables_Child_Deserialization_Into_Parent_Reference()
         {
-            var mappings = new FluentResolverAndBinder();
-            var sett = new JsonSerializerSettings { ContractResolver = mappings, Binder = mappings };
+            var mappings = new FluentMappings();
+            var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
             mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
             mappings.RegisterClassMap<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() { ChildString = "Test" } }, sett);
@@ -66,15 +66,15 @@ namespace FluentContract.Test
         [Fact]
         public void Missing_Discriminator_Breaks_Child_Deserialization()
         {
-            var mappings = new FluentResolverAndBinder();
-            var sett = new JsonSerializerSettings { ContractResolver = mappings, Binder = mappings };
+            var mappings = new FluentMappings();
+            var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
             mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
             mappings.RegisterClassMap<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() { ChildString = "Test" } }, sett);
 
             // kill the child map
-            mappings = new FluentResolverAndBinder();
-            sett = new JsonSerializerSettings { ContractResolver = mappings, Binder = mappings };
+            mappings = new FluentMappings();
+            sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
             mappings.RegisterClassMap<Parent>(cm => cm.SetDiscriminator("Parent"));
 
             Assert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Container>(json, sett));
