@@ -32,14 +32,14 @@ namespace FluentContract
             _contractResolver = new FluentContractResolver(this);
         }
 
-        public void RegisterClassMap<T>(Action<ClassMap<T>> initializer)
+        public void RegisterClassMap<T>(Action<ClassMap<T>> classMapInitializer)
         {
             var baseContract = ContractResolver.ResolveContract(typeof(T)) as JsonObjectContract;
             if (baseContract == null)
                 throw new InvalidOperationException("Only classes can be mapped.");
 
             var cm = new ClassMap<T>(baseContract);
-            initializer(cm);
+            classMapInitializer(cm);
 
             _infoByType[typeof(T)] = cm;
             if (cm.TypeName != null)

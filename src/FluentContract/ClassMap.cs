@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace FluentContract
 {
-    public class ClassMap(Type type, JsonObjectContract defaultContract)
+    public abstract class ClassMap(Type type, JsonObjectContract defaultContract)
     {
         public Type Type { get; } = type;
 
@@ -67,6 +67,22 @@ namespace FluentContract
         public ClassMap<T> SetConverter(JsonConverter converter)
         {
             JsonContract.Converter = converter;
+            return this;
+        }
+
+        public ClassMap<T> MapMember(Expression<Func<T, object>> member, Action<MemberMap> memberMapInitializer)
+        {
+            var mi = member.GetMemberInfo();
+
+            var jprop = JsonContract.Properties.SingleOrDefault(x => x.PropertyName == mi.Name);
+            if (jprop == null)
+            {
+                jprop = new JsonProperty { PropertyName = mi.Name, DeclaringType = Type };
+                JsonContract.Properties.Add(jprop);
+            }
+
+            memberMapInitializer(new MemberMap(jprop));
+
             return this;
         }
     }

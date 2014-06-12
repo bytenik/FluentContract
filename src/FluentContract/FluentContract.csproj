@@ -49,6 +49,8 @@
     <Compile Include="FluentMappings.cs" />
     <Compile Include="ClassMap.cs" />
     <Compile Include="Internals\ConstructorInfoRetriever.cs" />
+    <Compile Include="Internals\ReflectionHelper.cs" />
+    <Compile Include="MemberMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
