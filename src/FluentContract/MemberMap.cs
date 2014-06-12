@@ -18,5 +18,11 @@ namespace FluentContract
             _jsonProperty.MemberConverter = converter;
             return this;
         }
+
+        public MemberMap SetName(string name)
+        {
+            _jsonProperty.UnderlyingName = name;
+            return this;
+        }
     }
 }

@@ -70,7 +70,7 @@ namespace FluentContract
             return this;
         }
 
-        public ClassMap<T> MapMember(Expression<Func<T, object>> member, Action<MemberMap> memberMapInitializer)
+        private JsonProperty ExpressionToProperty(Expression<Func<T, object>> member)
         {
             var mi = member.GetMemberInfo();
 
@@ -81,7 +81,22 @@ namespace FluentContract
                 JsonContract.Properties.Add(jprop);
             }
 
+            return jprop;
+        }
+
+        public ClassMap<T> MapMember(Expression<Func<T, object>> member, Action<MemberMap> memberMapInitializer)
+        {
+            var jprop = ExpressionToProperty(member);
+            jprop.Ignored = false;
             memberMapInitializer(new MemberMap(jprop));
+
+            return this;
+        }
+
+        public ClassMap<T> UnmapMember(Expression<Func<T, object>> member)
+        {
+            var jprop = ExpressionToProperty(member);
+            jprop.Ignored = true;
 
             return this;
         }

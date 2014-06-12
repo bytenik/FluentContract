@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Constructors.cs" />
     <Compile Include="Converters.cs" />
+    <Compile Include="IgnoreMembers.cs" />
     <Compile Include="Inheritance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
