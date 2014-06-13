@@ -1,6 +1,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>FluentContract</id>
+    <version>$version$</version>
     <authors>bytenik</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Adapts Json.NET to use custom-created contracts and type naming using fluent syntax.</description>
