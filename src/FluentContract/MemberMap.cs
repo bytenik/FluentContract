@@ -21,7 +21,7 @@ namespace FluentContract
 
         public MemberMap SetName(string name)
         {
-            _jsonProperty.UnderlyingName = name;
+            _jsonProperty.PropertyName = name;
             return this;
         }
     }

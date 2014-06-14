@@ -70,14 +70,31 @@ namespace FluentContract
             return this;
         }
 
+        private Type GetMemberType(MemberInfo member)
+        {
+            if (member is PropertyInfo)
+                return ((PropertyInfo)member).PropertyType;
+            else if (member is FieldInfo)
+                return ((FieldInfo)member).FieldType;
+            else if (member is MethodInfo)
+                return ((MethodInfo)member).ReturnType;
+            else
+                throw new NotSupportedException("Only the type of properties, fields, and the return type of methods can be determined.");
+        }
+
         private JsonProperty ExpressionToProperty(Expression<Func<T, object>> member)
         {
             var mi = member.GetMemberInfo();
 
-            var jprop = JsonContract.Properties.SingleOrDefault(x => x.PropertyName == mi.Name);
+            var jprop = JsonContract.Properties.SingleOrDefault(x => x.UnderlyingName == mi.Name);
             if (jprop == null)
             {
-                jprop = new JsonProperty { PropertyName = mi.Name, DeclaringType = Type };
+                jprop = new JsonProperty
+                {
+                    UnderlyingName = mi.Name,
+                    DeclaringType = Type,
+                    PropertyType = GetMemberType(mi)
+                };
                 JsonContract.Properties.Add(jprop);
             }
 

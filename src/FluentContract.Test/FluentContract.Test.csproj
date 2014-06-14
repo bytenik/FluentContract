@@ -51,6 +51,7 @@
     <Compile Include="Converters.cs" />
     <Compile Include="IgnoreMembers.cs" />
     <Compile Include="Inheritance.cs" />
+    <Compile Include="Properties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
