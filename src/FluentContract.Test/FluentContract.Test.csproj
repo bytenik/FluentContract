@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicResolve.cs" />
     <Compile Include="Constructors.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="IgnoreMembers.cs" />
