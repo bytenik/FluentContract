@@ -16,7 +16,7 @@ namespace FluentContract.Test
             public Parent Object { get; set; }
         }
 
-        class Parent
+        abstract class Parent
         {
             public string ParentString { get; set; }
         }
@@ -36,18 +36,6 @@ namespace FluentContract.Test
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() }, sett);
             var linq = JsonConvert.DeserializeObject<JObject>(json);
             Assert.Equal("Child", linq.$Object["$type"]);
-        }
-
-        [Fact]
-        public void Discriminator_Should_Be_Written_For_Parent()
-        {
-            var mappings = new FluentMappings();
-            var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
-            mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
-            mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
-            var json = JsonConvert.SerializeObject(new Container() { Object = new Parent() }, sett);
-            var linq = JsonConvert.DeserializeObject<JObject>(json);
-            Assert.Equal("Parent", linq.$Object["$type"]);
         }
 
         [Fact]
