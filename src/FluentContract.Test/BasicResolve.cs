@@ -10,10 +10,10 @@ namespace FluentContract.Test
     public class BasicResolve
     {
         [Fact]
-        public void Can_Resolve_Null()
+        public void Cannot_Resolve_Null()
         {
             var mappings = new FluentMappings();
-            mappings.ContractResolver.ResolveContract(null);
+            Assert.Throws<ArgumentNullException>(() => mappings.ContractResolver.ResolveContract(null));
         }
     }
 }

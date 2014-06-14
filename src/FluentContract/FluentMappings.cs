@@ -80,6 +80,8 @@ namespace FluentContract
 
             public JsonContract ResolveContract(Type type)
             {
+                Contract.Requires<ArgumentNullException>(type != null);
+
                 if (Mappings._infoByType.ContainsKey(type))
                     return Mappings._infoByType[type].JsonContract;
 
