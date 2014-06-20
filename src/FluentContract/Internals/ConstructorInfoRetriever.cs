@@ -44,10 +44,10 @@ namespace FluentContract.Internals
                 {
                     var arg = node.Arguments[i];
 
-                    if (arg.NodeType != ExpressionType.MemberAccess)
+                    if (arg.NodeType == ExpressionType.MemberAccess || arg.NodeType == ExpressionType.Convert || arg.NodeType == ExpressionType.ConvertChecked)
+                        Visit(arg);
+                    else
                         throw new InvalidOperationException("Constructor argument " + i + " is not a member reference against the prototype parameter.");
-
-                    VisitMember((MemberExpression)arg);
 
                     return new { pi, mi = _lastMemberAccess };
                 })
@@ -55,6 +55,15 @@ namespace FluentContract.Internals
             }
 
             return base.VisitNew(node);
+        }
+
+        protected override Expression VisitUnary(UnaryExpression node)
+        {
+            if (node.NodeType != ExpressionType.Convert && node.NodeType != ExpressionType.ConvertChecked)
+                return base.VisitUnary(node);
+
+            Visit(node.Operand);
+            return node;
         }
 
         protected override Expression VisitMember(MemberExpression node)

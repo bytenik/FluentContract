@@ -13,10 +13,12 @@ namespace FluentContract.Test
         class Custom
         {
             public string String { get; private set; }
+            public int Integer { get; private set; }
 
-            public Custom(int x)
+            public Custom(int? x)
             {
                 String = x.ToString();
+                Integer = x.Value;
             }
 
             public Custom(string y)
@@ -46,6 +48,20 @@ namespace FluentContract.Test
             Console.WriteLine(json);
             var newinst = JsonConvert.DeserializeObject<Custom>(json, sett);
             Assert.NotEqual(inst.String, newinst.String);
+        }
+
+        [Fact]
+        public void Class_Constructs_With_Custom_Constructor_With_Implied_Cast()
+        {
+            var mappings = new FluentMappings();
+            mappings.MapClass<Custom>(x => x.MapCreator(t => new Custom(t.Integer)));
+
+            var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
+            var inst = new Custom(5);
+            var json = JsonConvert.SerializeObject(inst, sett);
+            Console.WriteLine(json);
+            var newinst = JsonConvert.DeserializeObject<Custom>(json, sett);
+            Assert.Equal(inst.String, newinst.String);
         }
 
         [Fact]
