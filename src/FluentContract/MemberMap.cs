@@ -10,7 +10,7 @@ namespace FluentContract
 {
     public class MemberMap(JsonProperty jsonProperty)
     {
-        private JsonProperty _jsonProperty = jsonProperty;
+        private readonly JsonProperty _jsonProperty = jsonProperty;
 
         public MemberMap SetConverter(JsonConverter converter)
         {
