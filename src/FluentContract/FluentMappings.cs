@@ -97,6 +97,19 @@ namespace FluentContract
                         var info = Mappings._infoByType[prop.PropertyType];
                         if (info.TypeName != null)
                             prop.TypeNameHandling = TypeNameHandling.All;
+                        continue;
+                    }
+
+                    var collectionInterface = prop.PropertyType.GetInterfaces().SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>));
+                    if (collectionInterface != null)
+                    {
+                        var collectionItemType = collectionInterface.GetGenericArguments()[0];
+                        if (Mappings._infoByType.ContainsKey(collectionItemType))
+                        {
+                            var info = Mappings._infoByType[collectionItemType];
+                            if (info.TypeName != null)
+                                prop.ItemTypeNameHandling = TypeNameHandling.All;
+                        }
                     }
                 }
 

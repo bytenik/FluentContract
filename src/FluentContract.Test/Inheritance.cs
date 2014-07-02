@@ -16,6 +16,11 @@ namespace FluentContract.Test
             public Parent Object { get; set; }
         }
 
+        class CollectionContainer
+        {
+            public Parent[] Object { get; set; }
+        }
+
         abstract class Parent
         {
             public string ParentString { get; set; }
@@ -66,6 +71,19 @@ namespace FluentContract.Test
             mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
 
             Assert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Container>(json, sett));
+        }
+
+        [Fact]
+        public void Discriminator_Should_Be_Written_For_Collection()
+        {
+            var mappings = new FluentMappings();
+            var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
+            mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
+            mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
+            var json = JsonConvert.SerializeObject(new CollectionContainer() { Object = new Parent[] { new Child(), new Child() } }, sett);
+            Console.WriteLine(json);
+            var linq = JsonConvert.DeserializeObject<JObject>(json);
+            Assert.Equal("Child", linq.$Object[0]["$type"]);
         }
     }
 }
