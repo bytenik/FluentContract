@@ -87,13 +87,26 @@ namespace FluentContract.Test
         }
 
         [Fact]
-        public void Discriminator_Should_Be_Written_For_Collection()
+        public void Discriminator_Should_Be_Written_For_Array()
         {
             var mappings = new FluentMappings();
             var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
             mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
             mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Parent[] { new Child(), new Child() }, sett);
+            Console.WriteLine(json);
+            var linq = JsonConvert.DeserializeObject<JArray>(json);
+            Assert.Equal("Child", linq[0]["$type"]);
+        }
+
+        [Fact]
+        public void Discriminator_Should_Be_Written_For_Set()
+        {
+            var mappings = new FluentMappings();
+            var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
+            mappings.MapClass<Parent>(cm => cm.SetDiscriminator("Parent"));
+            mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
+            var json = JsonConvert.SerializeObject((ISet<Parent>)new HashSet<Parent> { new Child(), new Child() }, sett);
             Console.WriteLine(json);
             var linq = JsonConvert.DeserializeObject<JArray>(json);
             Assert.Equal("Child", linq[0]["$type"]);
