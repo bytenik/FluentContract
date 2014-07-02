@@ -85,35 +85,39 @@ namespace FluentContract
                 if (Mappings._infoByType.ContainsKey(type))
                     return Mappings._infoByType[type].JsonContract;
 
-                JsonObjectContract contract;
                 var innerContract = Mappings._wrappedResolver.ResolveContract(type);
-                contract = innerContract as JsonObjectContract;
-                if (contract == null) return innerContract;
-
-                foreach (var prop in contract.Properties)
+                if (innerContract is JsonArrayContract)
                 {
-                    if (Mappings._infoByType.ContainsKey(prop.PropertyType))
+                    var contract = (JsonArrayContract)innerContract;
+
+                    if (Mappings._infoByType.ContainsKey(contract.CollectionItemType))
                     {
-                        var info = Mappings._infoByType[prop.PropertyType];
+                        var info = Mappings._infoByType[contract.CollectionItemType];
                         if (info.TypeName != null)
-                            prop.TypeNameHandling = TypeNameHandling.All;
-                        continue;
+                            contract.ItemTypeNameHandling = TypeNameHandling.All;
                     }
 
-                    var collectionInterface = prop.PropertyType.GetInterfaces().SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>));
-                    if (collectionInterface != null)
+                    return contract;
+                }
+                else if (innerContract is JsonObjectContract)
+                {
+                    var contract = (JsonObjectContract)innerContract;
+
+                    foreach (var prop in contract.Properties)
                     {
-                        var collectionItemType = collectionInterface.GetGenericArguments()[0];
-                        if (Mappings._infoByType.ContainsKey(collectionItemType))
+                        if (Mappings._infoByType.ContainsKey(prop.PropertyType))
                         {
-                            var info = Mappings._infoByType[collectionItemType];
+                            var info = Mappings._infoByType[prop.PropertyType];
                             if (info.TypeName != null)
-                                prop.ItemTypeNameHandling = TypeNameHandling.All;
+                                prop.TypeNameHandling = TypeNameHandling.All;
+                            continue;
                         }
                     }
-                }
 
-                return contract;
+                    return contract;
+                }
+                else
+                    return innerContract;
             }
         }
 
