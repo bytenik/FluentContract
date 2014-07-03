@@ -11,9 +11,16 @@ namespace FluentContract.Test
 {
     public class Inheritance
     {
+        interface IInterface { }
+
         class Container
         {
             public Parent Object { get; set; }
+        }
+
+        class InterfaceContainer
+        {
+            public IInterface Object { get; set; }
         }
 
         class CollectionContainer
@@ -26,7 +33,7 @@ namespace FluentContract.Test
             public string ParentString { get; set; }
         }
 
-        class Child : Parent
+        class Child : Parent, IInterface
         {
             public string ChildString { get; set; }
         }
@@ -52,6 +59,20 @@ namespace FluentContract.Test
             mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() { ChildString = "Test" } }, sett);
             var rt = JsonConvert.DeserializeObject<Container>(json, sett);
+            Assert.IsType<Child>(rt.Object);
+            Assert.Equal("Test", ((Child)rt.Object).ChildString);
+        }
+
+        [Fact]
+        public void Discriminator_Enables_Child_Deserialization_Into_Interface_Reference()
+        {
+            var mappings = new FluentMappings();
+            var sett = new JsonSerializerSettings { ContractResolver = mappings.ContractResolver, Binder = mappings.Binder };
+            mappings.MapClass<IInterface>(cm => cm.SetDiscriminator("Interface"));
+            mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
+            var json = JsonConvert.SerializeObject(new InterfaceContainer() { Object = new Child() { ChildString = "Test" } }, sett);
+            Console.WriteLine(json);
+            var rt = JsonConvert.DeserializeObject<InterfaceContainer>(json, sett);
             Assert.IsType<Child>(rt.Object);
             Assert.Equal("Test", ((Child)rt.Object).ChildString);
         }

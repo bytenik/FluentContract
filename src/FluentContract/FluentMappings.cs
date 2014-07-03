@@ -13,7 +13,10 @@ namespace FluentContract
     public class FluentMappings
     {
         private readonly IDictionary<Type, ClassMap> _infoByType = new Dictionary<Type, ClassMap>();
+        private readonly IDictionary<Type, JsonContract> _registeredContracts = new Dictionary<Type, JsonContract>();
         private readonly IDictionary<string, ClassMap> _infoByName = new Dictionary<string, ClassMap>();
+        private readonly ISet<Type> _requiresDiscriminator = new HashSet<Type>();
+
         private readonly IContractResolver _wrappedResolver;
         private readonly SerializationBinder _wrappedBinder;
 
@@ -30,6 +33,11 @@ namespace FluentContract
 
             _binder = new FluentSerializationBinder(this);
             _contractResolver = new FluentContractResolver(this);
+        }
+
+        public void RegisterContract(Type type, JsonContract contract)
+        {
+            _registeredContracts[type] = contract;
         }
 
         public void MapClass<T>(Action<ClassMap<T>> classMapInitializer)
@@ -82,6 +90,9 @@ namespace FluentContract
             {
                 Contract.Requires<ArgumentNullException>(type != null);
 
+                if (Mappings._registeredContracts.ContainsKey(type))
+                    return Mappings._registeredContracts[type];
+
                 if (Mappings._infoByType.ContainsKey(type))
                     return Mappings._infoByType[type].JsonContract;
 
@@ -105,16 +116,30 @@ namespace FluentContract
                 {
                     var contract = (JsonObjectContract)innerContract;
 
-                    foreach (var prop in contract.Properties)
+                    if (contract.Properties != null)
                     {
-                        if (Mappings._infoByType.ContainsKey(prop.PropertyType))
+                        foreach (var prop in contract.Properties)
                         {
-                            var info = Mappings._infoByType[prop.PropertyType];
-                            if (info.TypeName != null)
-                                prop.TypeNameHandling = TypeNameHandling.All;
+                            if (Mappings._infoByType.ContainsKey(prop.PropertyType))
+                            {
+                                var info = Mappings._infoByType[prop.PropertyType];
+                                if (info.TypeName != null)
+                                    prop.TypeNameHandling = TypeNameHandling.All;
+                            }
                         }
-                        else if (prop.PropertyType.IsAbstract)
-                            prop.TypeNameHandling = TypeNameHandling.All;
+                    }
+
+                    if (contract.ConstructorParameters != null)
+                    {
+                        foreach (var prop in contract.ConstructorParameters)
+                        {
+                            if (Mappings._infoByType.ContainsKey(prop.PropertyType))
+                            {
+                                var info = Mappings._infoByType[prop.PropertyType];
+                                if (info.TypeName != null)
+                                    prop.TypeNameHandling = TypeNameHandling.All;
+                            }
+                        }
                     }
 
                     return contract;
