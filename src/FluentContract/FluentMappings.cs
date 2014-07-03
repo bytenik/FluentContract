@@ -106,10 +106,10 @@ namespace FluentContract
                     if (Mappings._infoByType.ContainsKey(contract.CollectionItemType))
                     {
                         var info = Mappings._infoByType[contract.CollectionItemType];
-                        if (info.TypeName != null)
+                        if (info.TypeName != null && contract.ItemTypeNameHandling == null)
                             contract.ItemTypeNameHandling = TypeNameHandling.All;
                     }
-                    else if (contract.CollectionItemType.IsAbstract)
+                    else if (contract.CollectionItemType.IsAbstract && contract.ItemTypeNameHandling == null)
                         contract.ItemTypeNameHandling = TypeNameHandling.All;
 
                     return contract;
@@ -125,7 +125,7 @@ namespace FluentContract
                             if (Mappings._infoByType.ContainsKey(prop.PropertyType))
                             {
                                 var info = Mappings._infoByType[prop.PropertyType];
-                                if (info.TypeName != null)
+                                if (info.TypeName != null && prop.TypeNameHandling == null)
                                     prop.TypeNameHandling = TypeNameHandling.All;
                             }
                         }
@@ -138,7 +138,7 @@ namespace FluentContract
                             if (Mappings._infoByType.ContainsKey(prop.PropertyType))
                             {
                                 var info = Mappings._infoByType[prop.PropertyType];
-                                if (info.TypeName != null)
+                                if (info.TypeName != null && prop.TypeNameHandling == null)
                                     prop.TypeNameHandling = TypeNameHandling.All;
                             }
                         }
