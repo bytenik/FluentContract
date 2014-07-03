@@ -93,10 +93,12 @@ namespace FluentContract
                 if (Mappings._registeredContracts.ContainsKey(type))
                     return Mappings._registeredContracts[type];
 
+                JsonContract innerContract;
                 if (Mappings._infoByType.ContainsKey(type))
-                    return Mappings._infoByType[type].JsonContract;
+                    innerContract = Mappings._infoByType[type].JsonContract;
+                else
+                    innerContract = Mappings._wrappedResolver.ResolveContract(type);
 
-                var innerContract = Mappings._wrappedResolver.ResolveContract(type);
                 if (innerContract is JsonArrayContract)
                 {
                     var contract = (JsonArrayContract)innerContract;
