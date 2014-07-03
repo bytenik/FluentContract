@@ -96,6 +96,8 @@ namespace FluentContract
                         if (info.TypeName != null)
                             contract.ItemTypeNameHandling = TypeNameHandling.All;
                     }
+                    else if (contract.CollectionItemType.IsAbstract)
+                        contract.ItemTypeNameHandling = TypeNameHandling.All;
 
                     return contract;
                 }
@@ -110,8 +112,9 @@ namespace FluentContract
                             var info = Mappings._infoByType[prop.PropertyType];
                             if (info.TypeName != null)
                                 prop.TypeNameHandling = TypeNameHandling.All;
-                            continue;
                         }
+                        else if (prop.PropertyType.IsAbstract)
+                            prop.TypeNameHandling = TypeNameHandling.All;
                     }
 
                     return contract;
