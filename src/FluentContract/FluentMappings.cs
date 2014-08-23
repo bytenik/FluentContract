@@ -109,8 +109,6 @@ namespace FluentContract
                         if (info.TypeName != null && contract.ItemTypeNameHandling == null)
                             contract.ItemTypeNameHandling = TypeNameHandling.All;
                     }
-                    else if (contract.CollectionItemType.IsAbstract && contract.ItemTypeNameHandling == null)
-                        contract.ItemTypeNameHandling = TypeNameHandling.All;
 
                     return contract;
                 }
