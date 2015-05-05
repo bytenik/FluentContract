@@ -58,7 +58,7 @@ namespace FluentContract
             Dictionary<ParameterInfo, MemberInfo> args;
             var ctor = ctorir.GetConstructorInfo(creatorLambda, out args);
 
-            JsonContract.OverrideCreator = x => ctor.Invoke(null, x);
+            JsonContract.OverrideCreator = x => ctor.Invoke(x);
             JsonContract.CreatorParameters.Clear();
 
             foreach (var arg in args)

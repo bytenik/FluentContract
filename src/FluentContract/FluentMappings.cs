@@ -98,7 +98,7 @@ namespace FluentContract
 
             public JsonContract ResolveContract(Type type)
             {
-                Contract.Requires<ArgumentNullException>(type != null);
+                if (type == null) throw new ArgumentNullException(nameof(type));
 
                 if (Mappings._registeredContracts.ContainsKey(type))
                     return Mappings._registeredContracts[type];
@@ -157,12 +157,6 @@ namespace FluentContract
                 else
                     return innerContract;
             }
-        }
-
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(_wrappedResolver != null, "Wrapped contract resolver cannot be null.");
         }
     }
 }
