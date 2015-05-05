@@ -111,10 +111,33 @@ namespace FluentContract
             return jprop;
         }
 
-        public ClassMap<T> MapMember(Expression<Func<T, object>> member, Action<MemberMap> memberMapInitializer)
+        private JsonProperty MapMemberInternal(Expression<Func<T, object>> member)
         {
+            var mi = member.GetMemberInfo();
             var jprop = ExpressionToProperty(member);
             jprop.Ignored = false;
+            jprop.Readable = mi is FieldInfo || ((mi as PropertyInfo)?.CanRead ?? false);
+            jprop.Writable = mi is FieldInfo || ((mi as PropertyInfo)?.CanWrite ?? false);
+            if (jprop.ValueProvider == null) jprop.ValueProvider = new DynamicValueProvider(mi);
+
+            return jprop;
+        }
+
+        public ClassMap<T> UnmapAll()
+        {
+            JsonContract.Properties.Clear();
+            return this;
+        }
+
+        public ClassMap<T> MapMember(Expression<Func<T, object>> member)
+        {
+            MapMemberInternal(member);
+            return this;
+        }
+
+        public ClassMap<T> MapMember(Expression<Func<T, object>> member, Action<MemberMap> memberMapInitializer)
+        {
+            var jprop = MapMemberInternal(member);
             memberMapInitializer(new MemberMap(jprop));
 
             return this;
