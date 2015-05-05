@@ -54,9 +54,14 @@ namespace FluentContract
                 _infoByName[cm.TypeName] = cm;
         }
 
-        private class FluentSerializationBinder(FluentMappings mappings) : SerializationBinder
+        private class FluentSerializationBinder : SerializationBinder
         {
-            public FluentMappings Mappings { get; } = mappings;
+            public FluentSerializationBinder(FluentMappings mappings)
+            {
+                Mappings = mappings;
+            }
+
+            public FluentMappings Mappings { get; }
 
             public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
             {
@@ -82,9 +87,14 @@ namespace FluentContract
             }
         }
 
-        private class FluentContractResolver(FluentMappings mappings) : IContractResolver
+        private class FluentContractResolver : IContractResolver
         {
-            public FluentMappings Mappings { get; } = mappings;
+            public FluentContractResolver(FluentMappings mappings)
+            {
+                Mappings = mappings;
+            }
+
+            public FluentMappings Mappings { get; }
 
             public JsonContract ResolveContract(Type type)
             {
@@ -129,9 +139,9 @@ namespace FluentContract
                         }
                     }
 
-                    if (contract.ConstructorParameters != null)
+                    if (contract.CreatorParameters != null)
                     {
-                        foreach (var prop in contract.ConstructorParameters)
+                        foreach (var prop in contract.CreatorParameters)
                         {
                             if (Mappings._infoByType.ContainsKey(prop.PropertyType))
                             {

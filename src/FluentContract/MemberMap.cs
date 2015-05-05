@@ -8,9 +8,14 @@ using System.Threading.Tasks;
 
 namespace FluentContract
 {
-    public class MemberMap(JsonProperty jsonProperty)
+    public class MemberMap
     {
-        private readonly JsonProperty _jsonProperty = jsonProperty;
+        public MemberMap(JsonProperty jsonProperty)
+        {
+            _jsonProperty = jsonProperty;
+        }
+
+        private readonly JsonProperty _jsonProperty;
 
         public MemberMap SetConverter(JsonConverter converter)
         {

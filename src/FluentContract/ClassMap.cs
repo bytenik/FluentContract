@@ -12,11 +12,17 @@ using Newtonsoft.Json;
 
 namespace FluentContract
 {
-    public abstract class ClassMap(Type type, JsonObjectContract defaultContract)
+    public abstract class ClassMap
     {
-        public Type Type { get; } = type;
+        public ClassMap(Type type, JsonObjectContract defaultContract)
+        {
+            Type = type;
+            JsonContract = defaultContract;
+        }
 
-        protected internal JsonObjectContract JsonContract { get; } = defaultContract;
+        public Type Type { get; }
+
+        protected internal JsonObjectContract JsonContract { get; }
 
         public string TypeName { get; set; }
 
@@ -27,9 +33,13 @@ namespace FluentContract
         }
     }
 
-    public class ClassMap<T>(JsonObjectContract defaultContract)
-        : ClassMap(typeof(T), defaultContract)
+    public class ClassMap<T> : ClassMap
     {
+        public ClassMap(JsonObjectContract defaultContract)
+            : base(typeof(T), defaultContract)
+        {
+        }
+
         public ClassMap<T> SetDiscriminator(string typeName)
         {
             TypeName = typeName;
@@ -45,15 +55,15 @@ namespace FluentContract
         public ClassMap<T> MapCreator(Expression<Func<T, T>> creatorLambda)
         {
             var ctorir = new ConstructorInfoRetriever();
-            var ctor = ctorir.GetConstructorInfo(creatorLambda, out var args);
+            Dictionary<ParameterInfo, MemberInfo> args;
+            var ctor = ctorir.GetConstructorInfo(creatorLambda, out args);
 
-            JsonContract.OverrideConstructor = ctor;
-            JsonContract.ParametrizedConstructor = null;
-            JsonContract.ConstructorParameters.Clear();
+            JsonContract.OverrideCreator = x => ctor.Invoke(null, x);
+            JsonContract.CreatorParameters.Clear();
 
             foreach (var arg in args)
             {
-                JsonContract.ConstructorParameters.Add(new JsonProperty
+                JsonContract.CreatorParameters.Add(new JsonProperty
                 {
                     PropertyName = arg.Value.Name,
                     UnderlyingName = arg.Key.Name,

@@ -47,7 +47,7 @@ namespace FluentContract.Test
             mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() }, sett);
             var linq = JsonConvert.DeserializeObject<JObject>(json);
-            Assert.Equal("Child", linq.$Object["$type"]);
+            Assert.Equal("Child", linq["Object"]["$type"]);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace FluentContract.Test
             mappings.MapClass<Child>(cm => cm.SetDiscriminator("Child"));
             var json = JsonConvert.SerializeObject(new Container() { Object = new Child() }, sett);
             var linq = JsonConvert.DeserializeObject<JObject>(json);
-            Assert.Equal("Child", linq.$Object["$type"]);
+            Assert.Equal("Child", linq["Object"]["$type"]);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace FluentContract.Test
             var json = JsonConvert.SerializeObject(new CollectionContainer() { Object = new Parent[] { new Child(), new Child() } }, sett);
             Console.WriteLine(json);
             var linq = JsonConvert.DeserializeObject<JObject>(json);
-            Assert.Equal("Child", linq.$Object[0]["$type"]);
+            Assert.Equal("Child", linq["Object"][0]["$type"]);
         }
 
         [Fact]
