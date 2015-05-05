@@ -116,8 +116,8 @@ namespace FluentContract
             var mi = member.GetMemberInfo();
             var jprop = ExpressionToProperty(member);
             jprop.Ignored = false;
-            jprop.Readable = mi is FieldInfo || ((mi as PropertyInfo)?.CanRead ?? false);
-            jprop.Writable = mi is FieldInfo || ((mi as PropertyInfo)?.CanWrite ?? false);
+            jprop.Readable = mi is FieldInfo || ((mi is PropertyInfo) && ((PropertyInfo)mi).CanRead);
+            jprop.Writable = mi is FieldInfo || ((mi is PropertyInfo) && ((PropertyInfo)mi).CanWrite);
             if (jprop.ValueProvider == null) jprop.ValueProvider = new DynamicValueProvider(mi);
 
             return jprop;
