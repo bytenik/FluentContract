@@ -42,11 +42,7 @@ namespace FluentContract
 
         public void MapClass<T>(Action<ClassMap<T>> classMapInitializer)
         {
-            var baseContract = ContractResolver.ResolveContract(typeof(T)) as JsonObjectContract;
-            if (baseContract == null)
-                throw new InvalidOperationException("Only classes can be mapped.");
-
-            var cm = new ClassMap<T>(baseContract);
+            var cm = new ClassMap<T>();
             classMapInitializer(cm);
 
             _infoByType[typeof(T)] = cm;
@@ -54,7 +50,7 @@ namespace FluentContract
                 _infoByName[cm.TypeName] = cm;
         }
 
-        private class FluentSerializationBinder : SerializationBinder
+        private class FluentSerializationBinder : DefaultSerializationBinder
         {
             public FluentSerializationBinder(FluentMappings mappings)
             {
@@ -83,7 +79,7 @@ namespace FluentContract
                 else if (Mappings._wrappedBinder != null)
                     return Mappings._wrappedBinder.BindToType(assemblyName, typeName);
                 else
-                    return null;
+                    return base.BindToType(assemblyName, typeName);
             }
         }
 
@@ -103,15 +99,18 @@ namespace FluentContract
                 if (Mappings._registeredContracts.ContainsKey(type))
                     return Mappings._registeredContracts[type];
 
-                JsonContract innerContract;
-                if (Mappings._infoByType.ContainsKey(type))
-                    innerContract = Mappings._infoByType[type].JsonContract;
-                else
-                    innerContract = Mappings._wrappedResolver.ResolveContract(type);
+                var baseContract = Mappings._wrappedResolver.ResolveContract(type);
+                if (baseContract == null)
+                    throw new InvalidOperationException("The base resolver refused to give a contract for the specified type: " + type.FullName);
 
-                if (innerContract is JsonArrayContract)
+                var classMaps = Mappings._infoByType.Where(kv => kv.Key == type || (kv.Value.Inheritable && kv.Key.IsAssignableFrom(type))).Select(x => x.Value);
+                baseContract = classMaps.Aggregate(baseContract, (current, classMap) => classMap.TransformContract((JsonObjectContract)current));
+
+                Mappings.RegisterContract(type, baseContract);
+
+                if (baseContract is JsonArrayContract)
                 {
-                    var contract = (JsonArrayContract)innerContract;
+                    var contract = (JsonArrayContract)baseContract;
 
                     if (Mappings._infoByType.ContainsKey(contract.CollectionItemType))
                     {
@@ -122,9 +121,9 @@ namespace FluentContract
 
                     return contract;
                 }
-                else if (innerContract is JsonObjectContract)
+                else if (baseContract is JsonObjectContract)
                 {
-                    var contract = (JsonObjectContract)innerContract;
+                    var contract = (JsonObjectContract)baseContract;
 
                     if (contract.Properties != null)
                     {
@@ -155,7 +154,7 @@ namespace FluentContract
                     return contract;
                 }
                 else
-                    return innerContract;
+                    return baseContract;
             }
         }
     }
