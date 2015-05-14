@@ -103,9 +103,6 @@ namespace FluentContract
                 if (baseContract == null)
                     throw new InvalidOperationException("The base resolver refused to give a contract for the specified type: " + type.FullName);
 
-                var classMaps = Mappings._infoByType.Where(kv => kv.Key == type || (kv.Value.Inheritable && kv.Key.IsAssignableFrom(type))).Select(x => x.Value);
-                baseContract = classMaps.Aggregate(baseContract, (current, classMap) => classMap.TransformContract((JsonObjectContract)current));
-
                 Mappings.RegisterContract(type, baseContract);
 
                 if (baseContract is JsonArrayContract)
@@ -124,6 +121,8 @@ namespace FluentContract
                 else if (baseContract is JsonObjectContract)
                 {
                     var contract = (JsonObjectContract)baseContract;
+                    var classMaps = Mappings._infoByType.Where(kv => kv.Key == type || (kv.Value.Inheritable && kv.Key.IsAssignableFrom(type))).Select(x => x.Value);
+                    contract = classMaps.Aggregate(contract, (current, classMap) => classMap.TransformContract(current));
 
                     if (contract.Properties != null)
                     {
